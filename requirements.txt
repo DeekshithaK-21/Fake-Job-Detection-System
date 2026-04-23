@@ -14,11 +14,12 @@ joblib
 
 # NLP / preprocessing
 emoji
+nltk
 
 # PDF
 pdfplumber
 PyPDF2
 
-# embeddings (VERY IMPORTANT)
+# embeddings (used in your code)
 transformers
 torch
