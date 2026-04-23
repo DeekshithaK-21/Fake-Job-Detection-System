@@ -1,0 +1,15 @@
+# data & large files
+data/
+*.npy
+*.csv
+*.png
+*.jpg
+*.jpeg
+*.webp
+
+# uploads
+uploads/
+
+# env
+tf_env/
+__pycache__/

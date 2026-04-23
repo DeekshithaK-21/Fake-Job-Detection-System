@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fraudulent Job Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🔍 Fraudulent Job Detection</h1>
+    <p class="subtitle">ML Based job post verification</p>
+
+    <div class="main-grid">
+
+        <!-- LEFT PANEL -->
+        <div class="left-panel">
+
+            <div class="tabs">
+                <button onclick="showTab(event, 'text')" class="active">Text Scan</button>
+                <button onclick="showTab(event, 'image')">Image Scan</button>
+                <button onclick="showTab(event, 'pdf')">PDF Scan</button>
+            </div>
+
+            <form method="POST" enctype="multipart/form-data">
+
+                <!-- ✅ SINGLE INPUT TYPE (FIXED) -->
+                <input type="hidden" name="input_type" id="inputType" value="text">
+
+                <!-- TEXT -->
+                <div id="text" class="tab-content">
+                    <textarea name="text" placeholder="Paste job description here..."></textarea>
+                </div>
+
+                <!-- IMAGE -->
+                <div id="image" class="tab-content hidden">
+                    <input type="file" name="image_file" id="imageInput" accept="image/*">
+
+                    <div class="preview-box hidden" id="imagePreviewBox">
+                        <img id="imagePreview" alt="Image Preview">
+                    </div>
+                </div>
+
+                <!-- PDF -->
+                <div id="pdf" class="tab-content hidden">
+                    <input type="file" name="pdf_file" id="pdfInput" accept="application/pdf">
+
+                    <div class="preview-box hidden" id="pdfPreviewBox">
+                        <iframe id="pdfPreview"></iframe>
+                    </div>
+                </div>
+
+                <button type="submit" class="analyze-btn">🔍 Analyze Job Post</button>
+            </form>
+
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="right-panel">
+
+            {% if result %}
+
+                {% if result.prediction == "Fake" %}
+                    <div class="result-box fake">🚨 HIGH RISK DETECTED</div>
+                {% else %}
+                    <div class="result-box real">✅ VERIFIED SAFE</div>
+                {% endif %}
+
+                <div class="confidence-bar">
+                    <div class="real-bar" style="width: {{ result.confidence.real * 100 }}%">
+                        {{ (result.confidence.real * 100)|round(1) }}%
+                    </div>
+                </div>
+
+                <div class="confidence-text">
+                    Confidence: {{ (result.confidence.real * 100)|round(1) }}% Real
+                </div>
+                {% if result.suspicious_words %}
+                <div class="suspicious-box">
+                    {% for word in result.suspicious_words %}
+                        <span class="suspicious-tag">{{ word }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            {% else %}
+                <div class="placeholder">
+                    🛡️ System Ready<br>
+                    <small>Upload or enter data to analyze</small>
+                </div>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+// -------- TAB SWITCH --------
+function showTab(event, tab) {
+    document.querySelectorAll(".tab-content").forEach(el => el.classList.add("hidden"));
+    document.getElementById(tab).classList.remove("hidden");
+
+    document.querySelectorAll(".tabs button").forEach(btn => btn.classList.remove("active"));
+    event.target.classList.add("active");
+
+    // ✅ FIX: set correct input_type dynamically
+    document.getElementById("inputType").value = tab;
+}
+
+// -------- IMAGE PREVIEW --------
+document.getElementById("imageInput")?.addEventListener("change", function(event) {
+    const file = event.target.files[0];
+
+    if (file) {
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            document.getElementById("imagePreview").src = e.target.result;
+            document.getElementById("imagePreviewBox").classList.remove("hidden");
+        };
+
+        reader.readAsDataURL(file);
+    }
+});
+
+// -------- PDF PREVIEW --------
+document.getElementById("pdfInput")?.addEventListener("change", function(event) {
+    const file = event.target.files[0];
+
+    if (file) {
+        const url = URL.createObjectURL(file);
+        document.getElementById("pdfPreview").src = url;
+        document.getElementById("pdfPreviewBox").classList.remove("hidden");
+    }
+});
+
+</script>
+
+</body>
+</html>
