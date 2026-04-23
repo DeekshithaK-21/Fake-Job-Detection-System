@@ -5,10 +5,6 @@ from nltk.stem import WordNetLemmatizer
 
 # ---------------- NLTK SETUP ----------------
 # Ensure required resources are available (avoids runtime errors in Flask)
-try:
-    nltk.data.find('corpora/wordnet')
-except:
-    nltk.download('wordnet')
 
 # Initialize lemmatizer
 lemmatizer = WordNetLemmatizer()
