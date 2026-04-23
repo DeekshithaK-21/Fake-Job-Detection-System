@@ -8,3 +8,6 @@ scikit-learn
 xgboost
 pdfplumber
 PyPDF2
+transformers
+torch
+pytesseract
